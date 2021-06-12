@@ -1,4 +1,5 @@
-// entry point 
-const app = require("app");
+// entry point
+const app = require("./src/app");
 
 app.start();
+

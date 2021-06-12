@@ -1,5 +1,5 @@
 {
-  "description": "A Crpto Trading Bot in node.js, with Mongoose",
+  "description": "A Crypto Trading Bot in Node.js & MongoDb, wrapped up with Docker",
   "main": "index.js",
   "scripts": {
     "prod": "NODE_ENV=production NODE_PATH=src node src/index.js",
