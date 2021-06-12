@@ -1,24 +1,84 @@
 require("dotenv").config();
-const coinbase = require("coinbase");
+const crypto = require("crypto");
+const axios = require("axios");
 
-// client instance for interacting with the coinbase API, docs:
-// https://developers.coinbase.com/api/v2#get-buy-price
+const apiKey = process.env.COINBASE_API_KEY;
+const apiSecret = process.env.COINBASE_API_SECRET;
 
-const client = new coinbase.Client({
-  "apiKey": process.env.COINBASE_API_KEY,
-  "apiSecret": process.env.COINBASE_API_SECRET,
-});
+// timestamp for req params
+const timestamp = Math.floor(Date.now() / 1000);
+
+// set params for message reqs - buy price reqs
+const reqBuy = {
+  method: "get",
+  path: "/v2/prices/BTC-EUR/buy",
+  body: "",
+};
+
+// same for sell price reqs
+const reqSell = {
+  method: "get",
+  path: "/v2/prices/BTC-EUR/sell",
+  body: "",
+};
+
+const messageSell = timestamp + reqSell.method + reqSell.path + reqSell.body;
+const messageBuy = timestamp + reqBuy.method + reqBuy.path + reqBuy.body;
+// console.log(messageSell);
+
+// create a hexedecimal encoded SHA256 signature of the message for reqBuy
+const signatureBuy = crypto
+  .createHmac("sha256", apiSecret)
+  .update(messageBuy)
+  .digest("hex");
+
+// same for reqSell
+const signatureSell = crypto
+  .createHmac("sha256", apiSecret)
+  .update(messageSell)
+  .digest("hex");
+
+// reqBuy options object
+const optionsBuy = {
+  method: reqBuy.method,
+  url: reqBuy.path,
+  baseURL: `https://api.coinbase.com/`,
+  headers: {
+    "CB-ACCESS-SIGN": signatureBuy,
+    "CB-ACCESS-timestamp": timestamp,
+    "CB-ACCESS-KEY": apiKey,
+  },
+};
+
+// reqSell options object
+const optionsSell = {
+  method: reqSell.method,
+  url: reqSell.path,
+  baseURL: `https://api.coinbase.com/`,
+  headers: {
+    "CB-ACCESS-SIGN": signatureSell,
+    "CB-ACCESS-timestamp": timestamp,
+    "CB-ACCESS-KEY": apiKey,
+  },
+};
 
 module.exports = {
   getBuyPrice: async () => {
-    // try {
-      client.getBuyPrice({ "currencyPair": "BTC-EUR" }, function (err, price) {
-        console.log("price:", price);
-        // console.log("file import and exports with obj orientated apporach works!!! :)")
-      });
-    // } catch (err) {
-      // console.error(err);
-    // }
+    try {
+      let res = await axios(optionsBuy);
+      return res.data.data.amount;
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  getSellPrice: async () => {
+    try {
+      let res = await axios(optionsSell)
+      return res.data.data.amount;
+    } catch (err) {
+      console.error(err);
+    }
   },
 };
 
