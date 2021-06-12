@@ -15,13 +15,21 @@ const reqBuy = {
 };
 
 // same for sell price reqs
-let reqSell = {
+const reqSell = {
   path: "/v2/prices/BTC-EUR/sell",
   body: "",
 };
 
-const messageSell = timestamp + reqSell + reqSell.body;
+// same for spot price reqs
+const reqSpot = {
+  path: "/v2/prices/BTC-EUR/spot",
+  body: "",
+};
+
+const messageSell = timestamp + reqSell.path + reqSell.body;
 const messageBuy = timestamp + reqBuy.path + reqBuy.body;
+const messageSpot = timestamp + reqSpot.path + reqSell.body;
+
 // console.log(messageSell);
 
 // create a hexedecimal encoded SHA256 signature of the message for reqBuy
@@ -34,6 +42,12 @@ const signatureBuy = crypto
 const signatureSell = crypto
   .createHmac("sha256", apiSecret)
   .update(messageSell)
+  .digest("hex");
+
+// same for reqSpot
+const signatureSpot = crypto
+  .createHmac("sha256", apiSecret)
+  .update(messageSpot)
   .digest("hex");
 
 // reqBuy options object
@@ -58,7 +72,28 @@ const optionsSell = {
   },
 };
 
+// reqSpot options object
+const optionsSpot = {
+  url: reqSpot.path,
+  baseURL: `https://api.coinbase.com/`,
+  headers: {
+    "CB-ACCESS-SIGN": signatureSpot,
+    "CB-ACCESS-timestamp": timestamp,
+    "CB-ACCESS-KEY": apiKey,
+  },
+};
+
 module.exports = {
+  // refactor for spot price?
+  getSpotPrice: async () => {
+    try {
+      let res = await axios(optionsSpot);
+      return res.data.data.amount;
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
   getBuyPrice: async () => {
     try {
       let res = await axios(optionsBuy);
@@ -70,11 +105,10 @@ module.exports = {
 
   getSellPrice: async () => {
     try {
-      let res = await axios(optionsSell)
+      let res = await axios(optionsSell);
       return res.data.data.amount;
     } catch (err) {
       console.error(err);
     }
   },
 };
-

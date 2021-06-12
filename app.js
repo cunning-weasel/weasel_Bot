@@ -2,4 +2,4 @@
 const app = require("./src/app");
 
 app.start();
-console.log("🔥..weasel_Bot's starting up..🔥");
+console.log("🔥..weasel_Bot's revving up..🔥");

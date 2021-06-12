@@ -10,11 +10,12 @@ module.exports = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
     const db = mongoose.connection;
 
     db.on("error", console.error.bind(console, "DB connection error:"));
     db.once("open", function () {
-      console.log("🦾 weasel_Bot's connected DB 🤖");
+      console.log("🦾 weasel_Bot's connected to DB 🤖");
     });
   },
 };
