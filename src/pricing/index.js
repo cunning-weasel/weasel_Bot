@@ -10,20 +10,18 @@ const timestamp = Math.floor(Date.now() / 1000);
 
 // set params for message reqs - buy price reqs
 const reqBuy = {
-  method: "get",
   path: "/v2/prices/BTC-EUR/buy",
   body: "",
 };
 
 // same for sell price reqs
-const reqSell = {
-  method: "get",
+let reqSell = {
   path: "/v2/prices/BTC-EUR/sell",
   body: "",
 };
 
-const messageSell = timestamp + reqSell.method + reqSell.path + reqSell.body;
-const messageBuy = timestamp + reqBuy.method + reqBuy.path + reqBuy.body;
+const messageSell = timestamp + reqSell + reqSell.body;
+const messageBuy = timestamp + reqBuy.path + reqBuy.body;
 // console.log(messageSell);
 
 // create a hexedecimal encoded SHA256 signature of the message for reqBuy
@@ -40,7 +38,6 @@ const signatureSell = crypto
 
 // reqBuy options object
 const optionsBuy = {
-  method: reqBuy.method,
   url: reqBuy.path,
   baseURL: `https://api.coinbase.com/`,
   headers: {
@@ -52,7 +49,6 @@ const optionsBuy = {
 
 // reqSell options object
 const optionsSell = {
-  method: reqSell.method,
   url: reqSell.path,
   baseURL: `https://api.coinbase.com/`,
   headers: {

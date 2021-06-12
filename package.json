@@ -1,6 +1,6 @@
 {
   "description": "A Crypto Trading Bot in Node.js & MongoDb, wrapped up with Docker",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "prod": "NODE_ENV=production NODE_PATH=src node src/index.js",
     "start": "NODE_PATH=src node src/index.js",
