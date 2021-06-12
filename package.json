@@ -1,0 +1,14 @@
+{
+  "description": "A Crpto Trading Bot in node.js, with Mongoose",
+  "main": "index.js",
+  "scripts": {
+    "prod": "NODE_ENV=production NODE_PATH=src node src/index.js",
+    "start": "NODE_PATH=src node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "coinbase": "^2.0.8",
+    "dotenv": "^10.0.0",
+    "mongoose": "^5.12.13"
+  }
+}
