@@ -5,6 +5,7 @@ const axios = require("axios");
 const apiKey = process.env.COINBASE_API_KEY;
 const apiSecret = process.env.COINBASE_API_SECRET;
 
+// N.B refactor all calls in loop
 // timestamp for req params
 const timestamp = Math.floor(Date.now() / 1000);
 
@@ -29,7 +30,6 @@ const reqSpot = {
 const messageSell = timestamp + reqSell.path + reqSell.body;
 const messageBuy = timestamp + reqBuy.path + reqBuy.body;
 const messageSpot = timestamp + reqSpot.path + reqSell.body;
-
 // console.log(messageSell);
 
 // create a hexedecimal encoded SHA256 signature of the message for reqBuy
@@ -49,6 +49,7 @@ const signatureSpot = crypto
   .createHmac("sha256", apiSecret)
   .update(messageSpot)
   .digest("hex");
+// console.log(signatureSpot);
 
 // reqBuy options object
 const optionsBuy = {
@@ -84,11 +85,47 @@ const optionsSpot = {
 };
 
 module.exports = {
-  // refactor for spot price?
+  // refactored for single method call getAllPrices for app folder
+  getAllPrices: async function () {
+    const actions = [
+      this.getSpotPrice(),
+      this.getBuyPrice(),
+      this.getSellPrice(),
+    ];
+
+    // Promise.all needed to take in iterable promises and return single Promise
+    // of resolved array results 
+    const results = await Promise.all(actions);
+    const ordering = ["spot", "buy", "sell"];
+
+    const dict = {};
+
+    for (let i in ordering) {
+      const order = ordering[i];
+      // console.log("ordering:", ordering[i]);
+      const result = results[i];
+      // console.log("results:", results[i]);
+      dict[order] = result;
+      // console.log(result);
+    }
+
+    const data = {
+      base: dict["buy"]["base"],
+      currency: dict["buy"]["currency"],
+      spot: dict["spot"]["amount"],
+      buy: dict["buy"]["amount"],
+      sell: dict["sell"]["amount"],
+      time: Date(),
+    };
+
+    return data;
+  },
+
   getSpotPrice: async () => {
     try {
       let res = await axios(optionsSpot);
-      return res.data.data.amount;
+      const data = res.data.data.amount;
+      return data;
     } catch (err) {
       console.error(err);
     }
@@ -97,7 +134,8 @@ module.exports = {
   getBuyPrice: async () => {
     try {
       let res = await axios(optionsBuy);
-      return res.data.data.amount;
+      const data = res.data.data.amount;
+      return data;
     } catch (err) {
       console.error(err);
     }
@@ -106,9 +144,11 @@ module.exports = {
   getSellPrice: async () => {
     try {
       let res = await axios(optionsSell);
-      return res.data.data.amount;
+      const data = res.data.data.amount;
+      return data;
     } catch (err) {
       console.error(err);
     }
   },
 };
+

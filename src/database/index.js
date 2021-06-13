@@ -15,7 +15,7 @@ module.exports = {
 
     db.on("error", console.error.bind(console, "DB connection error:"));
     db.once("open", function () {
-      console.log("🦾 weasel_Bot's connected to DB 🤖");
+      console.log(`🦾 weasel_Bot's connected to DB 🤖`);
     });
   },
 };
