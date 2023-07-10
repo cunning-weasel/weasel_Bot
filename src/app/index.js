@@ -1,5 +1,5 @@
 const pricing = require("../pricing");
-const database = require("../database");
+const database = require("../database/db");
 const Price = require("../models/Price");
 // for running the mainLoop every whatever
 // https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_args
