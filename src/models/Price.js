@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 // possible fixes for depracation warning below
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
 
 const PriceSchema = new Schema({
   base: {

@@ -11,26 +11,22 @@ const main = async () => {
   const time = 10 * 1000;
 
   try {
-  const buyPrice = await pricing.getBuyPrice();
-  console.log(`-------------------------------------------`);
-  console.log(`buy: ${buyPrice}`);
+    const buyPrice = await pricing.getBuyPrice();
+    console.log(`-------------------------------------------`);
+    console.log(`buy: ${buyPrice}`);
 
-  const sellPrice = await pricing.getSellPrice();
-  console.log(`sell: ${sellPrice}`);
+    const sellPrice = await pricing.getSellPrice();
+    console.log(`sell: ${sellPrice}`);
 
-  const spotPrice = await pricing.getSpotPrice();
-  console.log(`spot: ${spotPrice}`);
-  console.log(`-------------------------------------------`);
+    const spotPrice = await pricing.getSpotPrice();
+    console.log(`spot: ${spotPrice}`);
+    console.log(`-------------------------------------------`);
 
+    const allPrices = await pricing.getAllPrices();
+    console.log(`all prices: ${JSON.stringify(allPrices)}`);
 
-  const allPrices = await pricing.getAllPrices();
-  console.log(`all prices: ${JSON.stringify(allPrices)}`);
-
-  // creating new entry in db
-  const price = await Price.create({
-
-  });
-
+    // creating new entry in db
+    const price = await Price.create({});
   } catch (err) {
     console.error(err);
   }
@@ -44,4 +40,3 @@ module.exports = {
     main();
   },
 };
-
