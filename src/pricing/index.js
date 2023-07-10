@@ -32,7 +32,7 @@ const messageBuy = timestamp + reqBuy.path + reqBuy.body;
 const messageSpot = timestamp + reqSpot.path + reqSell.body;
 // console.log(messageSell);
 
-// create a hexedecimal encoded SHA256 signature of the message for reqBuy
+// create a hexedecimal encoded SHA256 sig of the message
 const signatureBuy = crypto
   .createHmac("sha256", apiSecret)
   .update(messageBuy)
@@ -51,7 +51,6 @@ const signatureSpot = crypto
   .digest("hex");
 // console.log(signatureSpot);
 
-// reqBuy options object
 const optionsBuy = {
   url: reqBuy.path,
   baseURL: `https://api.coinbase.com/`,
@@ -62,7 +61,6 @@ const optionsBuy = {
   },
 };
 
-// reqSell options object
 const optionsSell = {
   url: reqSell.path,
   baseURL: `https://api.coinbase.com/`,
@@ -73,7 +71,6 @@ const optionsSell = {
   },
 };
 
-// reqSpot options object
 const optionsSpot = {
   url: reqSpot.path,
   baseURL: `https://api.coinbase.com/`,
@@ -85,7 +82,6 @@ const optionsSpot = {
 };
 
 module.exports = {
-  // refactored for single method call getAllPrices for app folder
   getAllPrices: async function () {
     const actions = [
       this.getSpotPrice(),
@@ -93,8 +89,6 @@ module.exports = {
       this.getSellPrice(),
     ];
 
-    // Promise.all needed to take in iterable promises and return single Promise
-    // of resolved array results
     const results = await Promise.all(actions);
     const ordering = ["spot", "buy", "sell"];
 
