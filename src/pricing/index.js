@@ -93,8 +93,6 @@ module.exports = {
       this.getSellPrice(),
     ];
 
-    // Promise.all needed to take in iterable promises and return single Promise
-    // of resolved array results
     const results = await Promise.all(actions);
     const ordering = ["spot", "buy", "sell"];
 
