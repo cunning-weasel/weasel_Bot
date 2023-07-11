@@ -28,7 +28,7 @@ const main = async () => {
     console.log(`-------------------------------------------`);
 
     const allPrices = await pricing.getAllPrices();
-    console.log(`all prices: ${JSON.stringify(allPrices)}`);
+    console.log(`all prices obj: ${JSON.stringify(allPrices)}`);
 
     // create new entry in db
     const price = await Price.create({});
