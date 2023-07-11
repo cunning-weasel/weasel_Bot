@@ -5,143 +5,102 @@ const axios = require("axios");
 const apiKey = process.env.COINBASE_API_KEY;
 const apiSecret = process.env.COINBASE_API_SECRET;
 
-// N.B refactor all calls in loop
-// timestamp for req params
-const timestamp = Math.floor(Date.now() / 1000);
+const createRequest = (method, path, body) => {
+  const timestamp = Math.floor(Date.now() / 1000);
 
-// set params for message reqs - buy price reqs
-const reqBuy = {
-  path: "/v2/prices/BTC-EUR/buy",
-  body: "",
-};
+  const message = `${timestamp}${method}${path}${body}`;
+  const signature = crypto
+    .createHmac("sha256", apiSecret)
+    .update(message)
+    .digest("hex");
 
-// same for sell price reqs
-const reqSell = {
-  path: "/v2/prices/BTC-EUR/sell",
-  body: "",
-};
-
-// same for spot price reqs
-const reqSpot = {
-  path: "/v2/prices/BTC-EUR/spot",
-  body: "",
-};
-
-const messageSell = timestamp + reqSell.path + reqSell.body;
-const messageBuy = timestamp + reqBuy.path + reqBuy.body;
-const messageSpot = timestamp + reqSpot.path + reqSell.body;
-// console.log(messageSell);
-
-// create a hexedecimal encoded SHA256 sig of the message
-const signatureBuy = crypto
-  .createHmac("sha256", apiSecret)
-  .update(messageBuy)
-  .digest("hex");
-
-// same for reqSell
-const signatureSell = crypto
-  .createHmac("sha256", apiSecret)
-  .update(messageSell)
-  .digest("hex");
-
-// same for reqSpot
-const signatureSpot = crypto
-  .createHmac("sha256", apiSecret)
-  .update(messageSpot)
-  .digest("hex");
-// console.log(signatureSpot);
-
-const optionsBuy = {
-  url: reqBuy.path,
-  baseURL: `https://api.coinbase.com/`,
-  headers: {
-    "CB-ACCESS-SIGN": signatureBuy,
-    "CB-ACCESS-timestamp": timestamp,
-    "CB-ACCESS-KEY": apiKey,
-  },
-};
-
-const optionsSell = {
-  url: reqSell.path,
-  baseURL: `https://api.coinbase.com/`,
-  headers: {
-    "CB-ACCESS-SIGN": signatureSell,
-    "CB-ACCESS-timestamp": timestamp,
-    "CB-ACCESS-KEY": apiKey,
-  },
-};
-
-const optionsSpot = {
-  url: reqSpot.path,
-  baseURL: `https://api.coinbase.com/`,
-  headers: {
-    "CB-ACCESS-SIGN": signatureSpot,
-    "CB-ACCESS-timestamp": timestamp,
-    "CB-ACCESS-KEY": apiKey,
-  },
+  return {
+    method,
+    url: path,
+    baseURL: "https://api.coinbase.com",
+    headers: {
+      "CB-ACCESS-SIGN": signature,
+      "CB-ACCESS-TIMESTAMP": timestamp,
+      "CB-ACCESS-KEY": apiKey,
+    },
+  };
 };
 
 module.exports = {
   getAllPrices: async function () {
     const actions = [
-      this.getSpotPrice(),
-      this.getBuyPrice(),
-      this.getSellPrice(),
+      this.getPrice("BTC-EUR", "spot"),
+      this.getPrice("BTC-EUR", "buy"),
+      this.getPrice("BTC-EUR", "sell"),
+      this.getPrice("ETH-EUR", "spot"),
+      this.getPrice("ETH-EUR", "buy"),
+      this.getPrice("ETH-EUR", "sell"),
     ];
 
-    const results = await Promise.all(actions);
-    const ordering = ["spot", "buy", "sell"];
-
-    const dict = {};
-
-    for (let i in ordering) {
-      const order = ordering[i];
-      // console.log("ordering:", ordering[i]);
-      const result = results[i];
-      // console.log("results:", results[i]);
-      dict[order] = result;
-      // console.log(result);
-    }
-
-    const data = {
-      base: dict["buy"]["base"],
-      currency: dict["buy"]["currency"],
-      spot: dict["spot"]["amount"],
-      buy: dict["buy"]["amount"],
-      sell: dict["sell"]["amount"],
-      time: Date(),
-    };
-
-    return data;
-  },
-
-  getSpotPrice: async () => {
     try {
-      let res = await axios(optionsSpot);
-      const data = res.data.data.amount;
-      return data;
+      const results = await Promise.all(actions);
+
+      const ordering = [
+        "btc_spot",
+        "btc_buy",
+        "btc_sell",
+        "eth_spot",
+        "eth_buy",
+        "eth_sell",
+      ];
+      const data = {};
+
+      for (let i = 0; i < ordering.length; i++) {
+        const order = ordering[i];
+        const result = results[i];
+        data[order] = result;
+      }
+
+      const formattedData = {
+        btc: {
+          base: "BTC",
+          currency: "EUR",
+          spot: data["btc_spot"],
+          buy: data["btc_buy"],
+          sell: data["btc_sell"],
+        },
+        eth: {
+          base: "ETH",
+          currency: "EUR",
+          spot: data["eth_spot"],
+          buy: data["eth_buy"],
+          sell: data["eth_sell"],
+        },
+        time: new Date().toISOString(),
+      };
+
+      return formattedData;
     } catch (err) {
       console.error(err);
     }
   },
 
-  getBuyPrice: async () => {
+  getPrice: async function (currencyPair, type) {
+    const path = `/v2/prices/${currencyPair}/${type}`;
+    const request = createRequest("GET", path, "");
+
     try {
-      let res = await axios(optionsBuy);
-      const data = res.data.data.amount;
-      return data;
+      const response = await axios(request);
+      return response.data.data.amount;
     } catch (err) {
       console.error(err);
     }
   },
 
-  getSellPrice: async () => {
-    try {
-      let res = await axios(optionsSell);
-      const data = res.data.data.amount;
-      return data;
-    } catch (err) {
-      console.error(err);
-    }
+  getBuyPrice: async function () {
+    return this.getPrice("BTC-EUR", "buy");
+  },
+
+  getSellPrice: async function () {
+    return this.getPrice("BTC-EUR", "sell");
+  },
+
+  getSpotPrice: async function () {
+    return this.getPrice("BTC-EUR", "spot");
   },
 };

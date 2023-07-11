@@ -1,8 +1,6 @@
 const pricing = require("../pricing");
 const database = require("../database/db");
 const Price = require("../models/Price");
-// for running the mainLoop every whatever
-// https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_args
 const util = require("util");
 
 const setTimeoutPromise = util.promisify(setTimeout);
@@ -25,7 +23,7 @@ const main = async () => {
     const allPrices = await pricing.getAllPrices();
     console.log(`all prices: ${JSON.stringify(allPrices)}`);
 
-    // creating new entry in db
+    // create new entry in db
     const price = await Price.create({});
   } catch (err) {
     console.error(err);
