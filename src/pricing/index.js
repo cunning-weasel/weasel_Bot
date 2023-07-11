@@ -103,4 +103,16 @@ module.exports = {
   getSpotPrice: async function () {
     return this.getPrice("BTC-EUR", "spot");
   },
+
+  getEthBuyPrice: async function () {
+    return this.getPrice("ETH-EUR", "buy");
+  },
+
+  getEthSellPrice: async function () {
+    return this.getPrice("ETH-EUR", "sell");
+  },
+
+  getEthSpotPrice: async function () {
+    return this.getPrice("ETH-EUR", "spot");
+  },
 };

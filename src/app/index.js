@@ -10,14 +10,21 @@ const main = async () => {
 
   try {
     const buyPrice = await pricing.getBuyPrice();
+    const buyEthPrice = await pricing.getEthBuyPrice();
     console.log(`-------------------------------------------`);
-    console.log(`buy: ${buyPrice}`);
+    console.log(`buy BTC: ${buyPrice}`);
+    console.log(`buy ETH: ${buyEthPrice}`);
 
     const sellPrice = await pricing.getSellPrice();
-    console.log(`sell: ${sellPrice}`);
+    const sellEthPrice = await pricing.getEthSellPrice();
+    console.log(`sell BTC: ${sellPrice}`);
+    console.log(`sell ETH: ${sellEthPrice}`);
 
     const spotPrice = await pricing.getSpotPrice();
-    console.log(`spot: ${spotPrice}`);
+    const spotEthPrice = await pricing.getEthSpotPrice();
+
+    console.log(`spot BTC: ${spotPrice}`);
+    console.log(`spot ETH: ${spotEthPrice}`);
     console.log(`-------------------------------------------`);
 
     const allPrices = await pricing.getAllPrices();
