@@ -1,5 +1,5 @@
 
-Trend Following Strategy:
+Trend Following Strategy:<br>
 a. Choose technical indicators (e.g., moving averages, RSI, MACD) to identify trends. 
 b. Implement indicators in codebase to calculate their values based on historical price data. 
 c. Define specific rules or conditions to generate buy or sell signals based on the indicator values. i.e buy when the price crosses above a moving average or sell when the RSI reaches an overbought condition. 
