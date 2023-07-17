@@ -83,11 +83,11 @@ module.exports = {
 
   getPrice: async function (currencyPair, type) {
     const path = `/v2/prices/${currencyPair}/${type}`;
-    const request = createRequest("GET", path, "");
+    const req = createRequest("GET", path, "");
 
     try {
-      const response = await axios(request);
-      return response.data.data.amount;
+      const res = await axios(req);
+      return res.data.data.amount;
     } catch (err) {
       console.error(err);
     }
