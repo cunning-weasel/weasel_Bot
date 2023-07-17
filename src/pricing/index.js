@@ -5,7 +5,6 @@ const axios = require("axios");
 const apiKey = process.env.COINBASE_API_KEY;
 const apiSecret = process.env.COINBASE_API_SECRET;
 
-// refactored 
 // req handler
 createRequest = (method, path, body) => {
   const timestamp = Math.floor(Date.now() / 1000);
